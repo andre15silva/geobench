@@ -191,7 +191,7 @@ def render_everest():
 
     # 3) 2-D maps with peak markers, plus error maps
     fig, axs = plt.subplots(2, n, figsize=(4.2 * n, 8.4), squeeze=False)
-    fig.subplots_adjust(top=0.86, bottom=0.08, left=0.03, right=0.97, wspace=0.08, hspace=0.25)
+    fig.subplots_adjust(top=0.86, bottom=0.04, left=0.02, right=0.93, wspace=0.08, hspace=0.25)
     _header(fig, "Everest region: elevation (top) and error vs. SRTM (bottom)", sub)
     ext = [lon_r[0] - 0.005, lon_r[1] + 0.005, lat_r[0] - 0.005, lat_r[1] + 0.005]
     for k, (name, z) in enumerate([("Real", elev_t)] + [(MODELS[m], preds[m]) for m in models]):
@@ -212,9 +212,9 @@ def render_everest():
         m = models[k - 1]
         ax2.set_title(f"MAE {scores[m]['mae']:.0f} m · bias {scores[m]['bias']:+.0f} m · r={scores[m]['r']:.2f}", loc="left", fontsize=10)
         ax2.set_xticks([]), ax2.set_yticks([])
-    fig.colorbar(im, cax=fig.add_axes([0.04, 0.42, 0.012, 0.3]), label="m")
+    fig.colorbar(im, cax=fig.add_axes([0.945, 0.5, 0.01, 0.34]), label="elevation (m)")
     if n > 1:
-        fig.colorbar(er, cax=fig.add_axes([0.06, 0.1, 0.12, 0.02]), orientation="horizontal", label="model − real (m)")
+        fig.colorbar(er, cax=fig.add_axes([0.945, 0.06, 0.01, 0.34]), label="model − real (m)")
     fig.savefig(FIG / "everest_maps.png", dpi=130)
     plt.close(fig)
 
