@@ -73,7 +73,7 @@ def render_global():
     fig, axs = plt.subplots(rows, cols, figsize=(6.2 * cols, 3.6 * rows + 1.1), squeeze=False)
     fig.subplots_adjust(top=1 - 1.25 / (3.6 * rows + 1.1), bottom=0.04, left=0.03, right=0.97, hspace=0.35, wspace=0.08)
     _header(fig, f"How {len(models)} blind Claudes see the Earth",
-            "Asked “Land or Water?” at every 2° of the globe · 16,200 points · no tools, no internet · white = “Land”")
+            "Asked “Land or Water?” at every 2° of the globe · 16,200 points · no tools, no internet · white = “Land”, grey = no answer")
     for ax, (name, lp, _) in zip(axs.flat, panels):
         img = np.where(np.isnan(lp), 0.5, lp)
         ax.imshow(img, cmap="gray", vmin=0, vmax=1, extent=ext, interpolation="nearest")
@@ -89,17 +89,19 @@ def render_global():
     cmap = _terrain()
     cmap.set_bad("#141413")
     fig, axs = plt.subplots(rows, cols, figsize=(6.2 * cols, 3.6 * rows + 1.6), squeeze=False)
-    fig.subplots_adjust(top=1 - 1.25 / (3.6 * rows + 1.6), bottom=0.1, left=0.03, right=0.97, hspace=0.35, wspace=0.08)
+    fig.subplots_adjust(top=1 - 1.25 / (3.6 * rows + 1.6), bottom=0.13, left=0.03, right=0.97, hspace=0.35, wspace=0.08)
     _header(fig, f"How {len(models)} blind Claudes see the Earth’s relief",
-            "Elevation each model gives for the points it calls Land · black = “Water” · MAE on points both truth and model call land (area-weighted)")
-    for ax, (name, _, ep) in zip(axs.flat, panels):
+            "Elevation each model gives for the points it calls Land · black = “Water”, grey = no answer · MAE on points both truth and model call land (area-weighted)")
+    for ax, (name, lp, ep) in zip(axs.flat, panels):
         im = ax.imshow(ep, cmap=cmap, vmin=0, vmax=6000, extent=ext, interpolation="nearest")
+        ax.imshow(np.where(np.isnan(lp), 0.5, np.nan), cmap="gray", vmin=0, vmax=1, extent=ext,
+                  interpolation="nearest")  # unanswered = grey
         lab = "" if name == "Real" else (f"   MAE {scores[_key(name)]['elev_mae']:.0f} m · r={scores[_key(name)]['elev_r']:.2f}")
         ax.set_title(f"{name}{lab}", loc="left", fontsize=14)
         ax.set_axis_off()
     for ax in axs.flat[n:]:
         ax.set_axis_off()
-    cax = fig.add_axes([0.3, 0.045, 0.4, 0.018])
+    cax = fig.add_axes([0.3, 0.07, 0.4, 0.018])
     fig.colorbar(im, cax=cax, orientation="horizontal", label="elevation (m)", extend="max")
     fig.text(0.98, 0.01, "truth: Natural Earth 1:10m land mask · ETOPO1 ice surface",
              ha="right", fontsize=9, color=MUTED)
