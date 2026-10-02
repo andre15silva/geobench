@@ -1,6 +1,10 @@
-"""Ground truth: Natural Earth 1:10m land mask (minus lakes) and AWS Terrain Tiles elevation.
+"""Ground truth: Natural Earth 1:10m land mask (minus lakes) plus elevation.
 
-Elevation comes from the public `elevation-tiles-prod` Terrarium tiles (SRTM / GMTED /
+Global elevation is point-sampled from ETOPO1 *Ice Surface* (1 arc-minute, via NOAA
+ERDDAP), so Antarctica and Greenland are measured at the top of the ice. Terrain Tiles
+cannot be used there: they carry bedrock under the ice sheets.
+
+High-resolution elevation (Everest) comes from the public `elevation-tiles-prod` Terrarium tiles (SRTM / GMTED /
 ETOPO1 / NED composite, https://registry.opendata.aws/terrain-tiles/), decoded as
     h = R*256 + G + B/256 - 32768   [metres]
 """
@@ -104,6 +108,22 @@ def elevation(lats: np.ndarray, lons: np.ndarray, z: int) -> np.ndarray:
             + (1 - wx) * wy * at(x0, y0 + 1) + wx * wy * at(x0 + 1, y0 + 1))
 
 
+ETOPO_URL = ("https://coastwatch.pfeg.noaa.gov/erddap/griddap/etopo180.csv?"
+             "altitude%5B({la0}):{st}:({la1})%5D%5B({lo0}):{st}:({lo1})%5D")
+
+
+def etopo1(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
+    """ETOPO1 ice-surface elevation at the nodes of a regular grid (spacing a multiple of 1')."""
+    step = round(abs(lats[1] - lats[0]) * 60)
+    assert step == round(abs(lons[1] - lons[0]) * 60), "need a square grid"
+    url = ETOPO_URL.format(la0=lats.min(), la1=lats.max(), lo0=lons.min(), lo1=lons.max(), st=step)
+    r = requests.get(url, timeout=600)
+    r.raise_for_status()
+    rows = [l.split(",") for l in r.text.splitlines()[2:]]
+    look = {(round(float(a), 4), round(float(b), 4)): float(c) for a, b, c in rows}
+    return np.array([[look[(round(float(la), 4), round(float(lo), 4))] for lo in lons] for la in lats], np.float32)
+
+
 def dem_patch(lat_range, lon_range, z: int = 12, res: int = 400):
     """A regular lat/lon DEM raster (res x res) for high-resolution 3-D rendering."""
     lats = np.linspace(lat_range[1], lat_range[0], res)
@@ -111,14 +131,14 @@ def dem_patch(lat_range, lon_range, z: int = 12, res: int = 400):
     return lats, lons, elevation(lats, lons, z)
 
 
-def ground_truth(grid, elev_zoom: int):
-    """Cached (land_mask, elevation) arrays for a grid."""
-    p = CACHE / f"truth_{grid.name}_z{elev_zoom}.npz"
+def ground_truth(grid, elev_zoom: int | None = None):
+    """Cached (land_mask, elevation) arrays. elev_zoom=None -> ETOPO1, else Terrain Tiles at that zoom."""
+    p = CACHE / f"truth_{grid.name}_{'etopo1' if elev_zoom is None else f'z{elev_zoom}'}.npz"
     if p.exists():
         d = np.load(p)
         return d["land"], d["elev"]
     land = land_mask(grid.lats, grid.lons)
-    elev = elevation(grid.lats, grid.lons, elev_zoom)
+    elev = etopo1(grid.lats, grid.lons) if elev_zoom is None else elevation(grid.lats, grid.lons, elev_zoom)
     p.parent.mkdir(parents=True, exist_ok=True)
     np.savez(p, land=land, elev=elev)
     return land, elev

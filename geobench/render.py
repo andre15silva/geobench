@@ -27,7 +27,7 @@ MODELS = {  # display order
 }
 PEAKS = {"Everest": (27.9881, 86.9250), "Lhotse": (27.9617, 86.9333),
          "Makalu": (27.8897, 87.0883), "Cho Oyu": (28.0942, 86.6608)}
-GLOBAL_Z, EVEREST_Z = 6, 12
+EVEREST_Z = 12
 
 plt.rcParams.update({"figure.facecolor": BG, "axes.facecolor": BG, "savefig.facecolor": BG,
                      "text.color": INK, "axes.labelcolor": MUTED, "xtick.color": MUTED,
@@ -55,7 +55,7 @@ def _header(fig, title, sub):
 # ----------------------------------------------------------------------------- global
 def render_global():
     g = global_grid()
-    land_t, elev_t = ground_truth(g, GLOBAL_Z)
+    land_t, elev_t = ground_truth(g)
     models = available(g)
     if not models:
         return {}
@@ -101,7 +101,7 @@ def render_global():
         ax.set_axis_off()
     cax = fig.add_axes([0.3, 0.045, 0.4, 0.018])
     fig.colorbar(im, cax=cax, orientation="horizontal", label="elevation (m)", extend="max")
-    fig.text(0.98, 0.01, "truth: Natural Earth 1:10m land mask · AWS Terrain Tiles (SRTM/GMTED/ETOPO1)",
+    fig.text(0.98, 0.01, "truth: Natural Earth 1:10m land mask · ETOPO1 ice surface",
              ha="right", fontsize=9, color=MUTED)
     fig.savefig(FIG / "global_altitude.png", dpi=130)
     plt.close(fig)
