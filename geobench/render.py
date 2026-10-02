@@ -48,8 +48,9 @@ def _terrain():
 
 
 def _header(fig, title, sub):
-    fig.text(0.02, 0.975, title, fontsize=22, weight="bold", va="top")
-    fig.text(0.02, 0.925, sub, fontsize=11, color=MUTED, va="top")
+    h = fig.get_figheight()  # place in inches so short and tall figures look alike
+    fig.text(0.02, 1 - 0.2 / h, title, fontsize=22, weight="bold", va="top")
+    fig.text(0.02, 1 - 0.62 / h, sub, fontsize=11, color=MUTED, va="top")
 
 
 # ----------------------------------------------------------------------------- global
@@ -122,24 +123,28 @@ def _xy_km(lats, lons):
     return x, y
 
 
-def _surface(ax, lats, lons, z, title, vmin, vmax):
+SEA = np.array([0.42, 0.56, 0.70, 1.0])
+
+
+def _surface(ax, lats, lons, z, title, vmin, vmax, exag=2.2, zticks=(3000, 5000, 7000, 9000)):
     x, y = _xy_km(lats, lons)
     X, Y = np.meshgrid(x, y)
     hole = np.isnan(z)
     zz = np.where(hole, np.nanmean(z), z)
     ls = LightSource(azdeg=315, altdeg=35)
     rgb = ls.shade(zz, cmap=_terrain(), vert_exag=0.02, blend_mode="soft", vmin=vmin, vmax=vmax)
+    rgb[zz <= 0] = SEA
     rgb[hole] = (0, 0, 0, 0)  # unanswered points: leave a hole rather than invent terrain
     zz = np.where(hole, np.nan, zz)
     stride = max(1, len(lats) // 200)
     ax.plot_surface(X, Y, zz, facecolors=rgb, rstride=stride, cstride=stride,
                     linewidth=0, antialiased=False, shade=False)
-    ax.set_box_aspect((x[-1], y[0], (vmax - vmin) / 1000 * 2.2), zoom=1.25)  # 2.2x vertical exaggeration
+    ax.set_box_aspect((x[-1], y[0], (vmax - vmin) / 1000 * exag), zoom=1.25)
     ax.set_zlim(vmin, vmax)
     ax.view_init(elev=32, azim=-115)
     ax.text2D(0.03, 0.97, title, transform=ax.transAxes, fontsize=13, va="top")
     ax.set_xticks([]), ax.set_yticks([])
-    ax.set_zticks([3000, 5000, 7000, 9000])
+    ax.set_zticks(list(zticks))
     ax.tick_params(axis="z", labelsize=8, pad=0)
     for a in (ax.xaxis, ax.yaxis, ax.zaxis):
         a.set_pane_color((0, 0, 0, 0))
@@ -253,10 +258,14 @@ def _plotly(g, hl, hn, hz, models, preds, scores):
 
 def main():
     FIG.mkdir(exist_ok=True)
-    out = {"global": render_global(), "everest": render_everest()}
+    from .render_ranges import render_ranges
+
+    out = {"global": render_global(), "everest": render_everest(), **render_ranges()}
     (ROOT / "results" / "scores.json").write_text(json.dumps(out, indent=2))
     for k, v in out.items():
         for m, s in v.items():
+            if m not in MODELS:
+                continue
             print(k, MODELS[m], {a: (round(b, 3) if isinstance(b, float) else b) for a, b in s.items()})
 
 

@@ -3,6 +3,7 @@
 Two tasks:
   * ``surface``   - "Land or Water?" plus, for land, the elevation (global grid).
   * ``elevation`` - elevation only, for points known to be on land (Everest close-up).
+  * ``relief``    - elevation, 0 at sea, ~5 km spacing (mountain ranges of each continent).
 
 Coordinates are batched one latitude row per request; every point has an index so
 answers can be matched back even if the model skips or reorders one.
@@ -31,9 +32,19 @@ Answer with exactly one line per point, in this format and nothing else:
 {points}"""
 
 
-def render(task: str, pts) -> str:
+RELIEF = """For each coordinate below (latitude, longitude in decimal degrees, WGS84), estimate the elevation of the surface in metres above sea level (for glaciers and ice sheets, the ice surface; 0 for points in the sea). Be as precise as you can - neighbouring points are about {spacing} apart.
+
+Answer with exactly one line per point, in this format and nothing else:
+<index> <elevation_m>
+
+{points}"""
+
+PROMPTS = {"surface": SURFACE, "elevation": ELEVATION, "relief": RELIEF}
+
+
+def render(task: str, pts, spacing: str = "5 km") -> str:
     body = "\n".join(f"{k}: {lat:.4f}, {lon:.4f}" for k, (lat, lon) in enumerate(pts))
-    return (SURFACE if task == "surface" else ELEVATION).format(points=body)
+    return PROMPTS[task].format(points=body, spacing=spacing)
 
 
 _NUM = r"(-?\d[\d,]*(?:\.\d+)?)"
@@ -48,7 +59,7 @@ def _f(s):
 def parse(task: str, text: str, n: int):
     """-> list of n (is_land: bool|None, elevation: float|None)."""
     out = [(None, None)] * n
-    if task == "surface":
+    if task == "surface":  # elevation / relief share the "<index> <metres>" format
         for m in _SURF.finditer(text):
             k = int(m.group(1))
             if 0 <= k < n:

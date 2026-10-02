@@ -10,6 +10,7 @@ ETOPO1 / NED composite, https://registry.opendata.aws/terrain-tiles/), decoded a
 """
 import io
 import math
+import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -68,7 +69,11 @@ def _tile(z, x, y) -> np.ndarray:
     p = CACHE / "terrarium" / str(z) / str(x) / f"{y}.npy"
     if p.exists():
         return np.load(p)
-    r = requests.get(TILE_URL.format(z=z, x=x, y=y), timeout=60)
+    for attempt in range(5):  # S3 occasionally answers 500/503
+        r = requests.get(TILE_URL.format(z=z, x=x, y=y), timeout=60)
+        if r.status_code < 500:
+            break
+        time.sleep(2**attempt)
     r.raise_for_status()
     a = np.asarray(Image.open(io.BytesIO(r.content)).convert("RGB"), dtype=np.float32)
     h = (a[..., 0] * 256 + a[..., 1] + a[..., 2] / 256 - 32768).astype(np.float32)
@@ -122,6 +127,58 @@ def etopo1(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
     rows = [l.split(",") for l in r.text.splitlines()[2:]]
     look = {(round(float(a), 4), round(float(b), 4)): float(c) for a, b, c in rows}
     return np.array([[look[(round(float(la), 4), round(float(lo), 4))] for lo in lons] for la in lats], np.float32)
+
+
+def etopo1_box(lat_range, lon_range, stride: int = 1):
+    """ETOPO1 ice surface over a lat/lon box: (lats south->north, lons, elev[lat, lon])."""
+    p = CACHE / f"etopo1_{lat_range[0]:.3f}_{lat_range[1]:.3f}_{lon_range[0]:.3f}_{lon_range[1]:.3f}_{stride}.npz"
+    if p.exists():
+        d = np.load(p)
+        return d["lats"], d["lons"], d["elev"]
+    pad = 2 / 60  # make sure the box covers the requested range after snapping to the 1' grid
+    url = ETOPO_URL.format(la0=lat_range[0] - pad, la1=lat_range[1] + pad,
+                           lo0=lon_range[0] - pad, lo1=lon_range[1] + pad, st=stride)
+    r = requests.get(url, timeout=600)
+    r.raise_for_status()
+    a = np.array([[float(v) for v in l.split(",")] for l in r.text.splitlines()[2:]])
+    lats, lons = np.unique(a[:, 0]), np.unique(a[:, 1])
+    elev = a[:, 2].reshape(len(lats), len(lons)).astype(np.float32)  # ERDDAP order: lat-major, ascending
+    p.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(p, lats=lats, lons=lons, elev=elev)
+    return lats, lons, elev
+
+
+def bilinear(src_lats, src_lons, src, lats, lons) -> np.ndarray:
+    """Sample a regular ascending-lat/lon raster at every (lat, lon) node of a target grid."""
+    fi = np.interp(lats, src_lats, np.arange(len(src_lats)))
+    fj = np.interp(lons, src_lons, np.arange(len(src_lons)))
+    i0 = np.clip(np.floor(fi).astype(int), 0, len(src_lats) - 2)
+    j0 = np.clip(np.floor(fj).astype(int), 0, len(src_lons) - 2)
+    wi, wj = (fi - i0)[:, None], (fj - j0)[None, :]
+    I, J = i0[:, None], j0[None, :]
+    return ((1 - wi) * (1 - wj) * src[I, J] + (1 - wi) * wj * src[I, J + 1]
+            + wi * (1 - wj) * src[I + 1, J] + wi * wj * src[I + 1, J + 1])
+
+
+def range_truth(rng, grid, res: int = 300):
+    """(elev at grid points, (lats, lons, hi-res patch)) for a mountain range; sea clipped to 0."""
+    p = CACHE / f"truth_{grid.name}_{rng.truth}.npz"
+    lat_r, lon_r = (grid.lats.min(), grid.lats.max()), (grid.lons.min(), grid.lons.max())
+    if p.exists():
+        d = np.load(p)
+        return d["elev"], (d["hl"], d["hn"], d["hz"])
+    if rng.truth == "etopo1":
+        bl, bn, bz = etopo1_box(lat_r, lon_r)
+        elev = bilinear(bl, bn, bz, grid.lats, grid.lons)
+        hl, hn = np.linspace(lat_r[1], lat_r[0], res), np.linspace(lon_r[0], lon_r[1], res)
+        hz = bilinear(bl, bn, bz, hl, hn)
+    else:
+        elev = elevation(grid.lats, grid.lons, 10)
+        hl, hn, hz = dem_patch(lat_r, lon_r, z=10, res=res)
+    elev, hz = np.maximum(elev, 0), np.maximum(hz, 0)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(p, elev=elev, hl=hl, hn=hn, hz=hz)
+    return elev, (hl, hn, hz)
 
 
 def dem_patch(lat_range, lon_range, z: int = 12, res: int = 400):

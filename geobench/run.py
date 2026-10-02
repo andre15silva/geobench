@@ -20,6 +20,10 @@ ROOT = Path(__file__).resolve().parent.parent
 TASK = {"global": "surface", "everest": "elevation"}
 
 
+def task_for(grid_key: str) -> str:
+    return TASK.get(grid_key, "relief")
+
+
 def results_path(grid_name: str, model: str) -> Path:
     return ROOT / "results" / grid_name / f"{model}.jsonl"
 
@@ -49,7 +53,7 @@ def main():
     a = ap.parse_args()
 
     grid = GRIDS[a.grid]()
-    task = TASK[a.grid]
+    task = task_for(a.grid)
     kw = {"effort": a.effort} if a.backend == "cli" else {"thinking": a.thinking}
     call = backends.make(a.backend, a.model, **{k: v for k, v in kw.items() if v})
     out = results_path(grid.name, a.model)
