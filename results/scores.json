@@ -90,5 +90,271 @@
       ],
       "peak_offset_km": 0.0
     }
+  },
+  "range_himalaya": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 590.1583577735206,
+      "rmse": 868.7363528425425,
+      "bias": -320.5414947457873,
+      "r": 0.9118177207444328,
+      "effective_resolution_km": 166.92856751982475,
+      "max_pred": 8000.0,
+      "max_true": 7688.872229510271,
+      "max_pred_near": "Everest",
+      "max_pred_offset_km": 0.8399485877603495
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 446.450623640715,
+      "rmse": 653.8192815615116,
+      "bias": -101.73805992923776,
+      "r": 0.9451520859053646,
+      "effective_resolution_km": 85.84987254642249,
+      "max_pred": 8300.0,
+      "max_true": 7688.872229510271,
+      "max_pred_near": "Everest",
+      "max_pred_offset_km": 0.8399485877603495
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 502.9604498007399,
+      "rmse": 776.7915887853115,
+      "bias": -221.36444556545945,
+      "r": 0.927112049613917,
+      "effective_resolution_km": 116.95811217295373,
+      "max_pred": 8100.0,
+      "max_true": 7688.872229510271,
+      "max_pred_near": "Annapurna",
+      "max_pred_offset_km": 33.58575027774749
+    }
+  },
+  "range_alps": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 349.1702081997244,
+      "rmse": 549.2597749886,
+      "bias": 23.574105136044516,
+      "r": 0.805215788832619,
+      "effective_resolution_km": 89.60674540842572,
+      "max_pred": 4300.0,
+      "max_true": 4094.4959471979414,
+      "max_pred_near": "Monte Rosa",
+      "max_pred_offset_km": 15.690750054466392
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 280.61002961205907,
+      "rmse": 436.65389996434794,
+      "bias": 31.69452610346002,
+      "r": 0.872646925183731,
+      "effective_resolution_km": 40.78001298212505,
+      "max_pred": 3800.0,
+      "max_true": 4094.4959471979414,
+      "max_pred_near": "Monte Rosa",
+      "max_pred_offset_km": 0.9104788613703071
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 260.9167921737948,
+      "rmse": 407.2243076318949,
+      "bias": -4.395536636875934,
+      "r": 0.8881157097597744,
+      "effective_resolution_km": 29.610635015515957,
+      "max_pred": 4200.0,
+      "max_true": 4094.4959471979414,
+      "max_pred_near": "Monte Rosa",
+      "max_pred_offset_km": 0.9104788613703071
+    }
+  },
+  "range_rockies": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 217.77655998358588,
+      "rmse": 315.0055528643283,
+      "bias": -20.970441781777073,
+      "r": 0.8808976966412821,
+      "effective_resolution_km": 76.68715395198618,
+      "max_pred": 4200.0,
+      "max_true": 4202.702954066038,
+      "max_pred_near": "Mt Elbert",
+      "max_pred_offset_km": 6.65186389260682
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 191.76831486308623,
+      "rmse": 288.7375343463456,
+      "bias": -43.00950270061942,
+      "r": 0.9040427322367512,
+      "effective_resolution_km": 55.80998681652797,
+      "max_pred": 4000.0,
+      "max_true": 4202.702954066038,
+      "max_pred_near": "Mt Elbert",
+      "max_pred_offset_km": 34.88987025994467
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 195.8375631222569,
+      "rmse": 284.33966514598103,
+      "bias": -45.9927044816354,
+      "r": 0.9077207167456567,
+      "effective_resolution_km": 58.86401379699411,
+      "max_pred": 4200.0,
+      "max_true": 4202.702954066038,
+      "max_pred_near": "Mt Elbert",
+      "max_pred_offset_km": 10.280743216962302
+    }
+  },
+  "range_andes": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 399.4822904478993,
+      "rmse": 647.4433352199597,
+      "bias": -25.2420939558173,
+      "r": 0.8859488590707433,
+      "effective_resolution_km": 109.93475736041563,
+      "max_pred": 6000.0,
+      "max_true": 6319.093838347494,
+      "max_pred_near": "Aconcagua",
+      "max_pred_offset_km": 1.5968804287132494
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 352.0479977791294,
+      "rmse": 570.5096613850341,
+      "bias": 115.62291312776902,
+      "r": 0.9304630451805453,
+      "effective_resolution_km": 87.17127913100661,
+      "max_pred": 6200.0,
+      "max_true": 6319.093838347494,
+      "max_pred_near": "Aconcagua",
+      "max_pred_offset_km": 3.9063910082893165
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 362.41730724286714,
+      "rmse": 582.5773052057667,
+      "bias": -13.313334595363948,
+      "r": 0.9112986521522454,
+      "effective_resolution_km": 92.19963906469036,
+      "max_pred": 6200.0,
+      "max_true": 6319.093838347494,
+      "max_pred_near": "Mercedario",
+      "max_pred_offset_km": 4.251138740123092
+    }
+  },
+  "range_atlas": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 300.99308614244,
+      "rmse": 430.69848830965594,
+      "bias": -40.17869815387081,
+      "r": 0.7914602268126195,
+      "effective_resolution_km": 135.97460525131123,
+      "max_pred": 3900.0,
+      "max_true": 3700.2752738843114,
+      "max_pred_near": "Toubkal",
+      "max_pred_offset_km": 2.574815390669798
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 223.0725633671226,
+      "rmse": 329.51232329283647,
+      "bias": 11.591186484866281,
+      "r": 0.8869454250777979,
+      "effective_resolution_km": 80.73077878522062,
+      "max_pred": 3700.0,
+      "max_true": 3700.2752738843114,
+      "max_pred_near": "Toubkal",
+      "max_pred_offset_km": 3.3641067222301424
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 242.36301384245968,
+      "rmse": 348.8588641211695,
+      "bias": 39.728203283085264,
+      "r": 0.8754257303276363,
+      "effective_resolution_km": 92.28732697317083,
+      "max_pred": 3800.0,
+      "max_true": 3700.2752738843114,
+      "max_pred_near": "Toubkal",
+      "max_pred_offset_km": 2.574815390669798
+    }
+  },
+  "range_southern_alps": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 184.84643037127418,
+      "rmse": 342.5983603291726,
+      "bias": 13.917470416646921,
+      "r": 0.8061061154128871,
+      "effective_resolution_km": 79.93781363905433,
+      "max_pred": 3000.0,
+      "max_true": 2725.770615801099,
+      "max_pred_near": "Aoraki / Mt Cook",
+      "max_pred_offset_km": 1.1867817445899689
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 175.57281645482485,
+      "rmse": 335.35384733074113,
+      "bias": 56.737344935974996,
+      "r": 0.842749966879111,
+      "effective_resolution_km": 70.70379686835366,
+      "max_pred": 2900.0,
+      "max_true": 2725.770615801099,
+      "max_pred_near": "Aoraki / Mt Cook",
+      "max_pred_offset_km": 1.1867817445899689
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 176.96309565090343,
+      "rmse": 337.51600810260214,
+      "bias": 36.33398529217819,
+      "r": 0.827217627845489,
+      "effective_resolution_km": 72.08792520040771,
+      "max_pred": 3400.0,
+      "max_true": 2725.770615801099,
+      "max_pred_near": "Aoraki / Mt Cook",
+      "max_pred_offset_km": 1.1867817445899689
+    }
+  },
+  "range_ellsworth": {
+    "claude-sonnet-5-5": {
+      "answered": 1.0,
+      "mae": 379.7635126144497,
+      "rmse": 479.10525421761486,
+      "bias": -203.8280497688724,
+      "r": 0.8105906129860119,
+      "effective_resolution_km": Infinity,
+      "max_pred": 4500.0,
+      "max_true": 4708.338624000016,
+      "max_pred_near": "Vinson Massif",
+      "max_pred_offset_km": 4.479767483544394
+    },
+    "claude-opus-5-5": {
+      "answered": 1.0,
+      "mae": 342.18190456101945,
+      "rmse": 470.12894958638884,
+      "bias": 4.495973708156544,
+      "r": 0.7852072710572122,
+      "effective_resolution_km": Infinity,
+      "max_pred": 4500.0,
+      "max_true": 4708.338624000016,
+      "max_pred_near": "Mt Tyree",
+      "max_pred_offset_km": 1.5425079564229065
+    },
+    "claude-fable-5-1": {
+      "answered": 1.0,
+      "mae": 308.96465918073176,
+      "rmse": 405.9696251802884,
+      "bias": -38.0520934847194,
+      "r": 0.8576464409168941,
+      "effective_resolution_km": Infinity,
+      "max_pred": 4300.0,
+      "max_true": 4708.338624000016,
+      "max_pred_near": "Vinson Massif",
+      "max_pred_offset_km": 7.948906878952479
+    }
   }
 }
