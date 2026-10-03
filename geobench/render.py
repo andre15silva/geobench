@@ -3,14 +3,13 @@
     python -m geobench.render            # renders every model that has results
 """
 import json
-from pathlib import Path
 
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
-from matplotlib.colors import LightSource, ListedColormap  # noqa: E402
+from matplotlib.colors import LightSource  # noqa: E402
 
 from .grids import everest_grid, global_grid  # noqa: E402
 from .run import ROOT, load, results_path  # noqa: E402
@@ -126,13 +125,20 @@ def _xy_km(lats, lons):
 SEA = np.array([0.42, 0.56, 0.70, 1.0])
 
 
-def _surface(ax, lats, lons, z, title, vmin, vmax, exag=2.2, zticks=(3000, 5000, 7000, 9000)):
+def _ice():
+    """For ice sheets: blue-grey shelf ice up to bright summit snow."""
+    from matplotlib.colors import LinearSegmentedColormap
+
+    return LinearSegmentedColormap.from_list("ice", [(0, "#9fb4c8"), (0.5, "#d9e2ea"), (1, "#ffffff")])
+
+
+def _surface(ax, lats, lons, z, title, vmin, vmax, exag=2.2, zticks=(3000, 5000, 7000, 9000), cmap=None):
     x, y = _xy_km(lats, lons)
     X, Y = np.meshgrid(x, y)
     hole = np.isnan(z)
     zz = np.where(hole, np.nanmean(z), z)
     ls = LightSource(azdeg=315, altdeg=35)
-    rgb = ls.shade(zz, cmap=_terrain(), vert_exag=0.02, blend_mode="soft", vmin=vmin, vmax=vmax)
+    rgb = ls.shade(zz, cmap=cmap or _terrain(), vert_exag=0.02, blend_mode="soft", vmin=vmin, vmax=vmax)
     rgb[zz <= 0] = SEA
     rgb[hole] = (0, 0, 0, 0)  # unanswered points: leave a hole rather than invent terrain
     zz = np.where(hole, np.nan, zz)

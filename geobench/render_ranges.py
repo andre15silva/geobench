@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib.colors import LightSource
 
 from .grids import RANGES, range_grid
-from .render import BG, FIG, MODELS, MUTED, ACCENT, SEA, _header, _surface, _terrain, _xy_km, available
+from .render import ACCENT, BG, FIG, MODELS, SEA, _header, _ice, _surface, _terrain, _xy_km, available
 from .run import load
 from .score import range_scores
 from .truth import range_truth
@@ -29,9 +29,13 @@ def _ticks(vmax):
     return list(range(step, int(vmax) + 1, step))
 
 
-def _hillshade(z, vmin, vmax):
+def _cmap(r):
+    return _ice() if r.truth == "etopo1" else _terrain()
+
+
+def _hillshade(z, vmin, vmax, cmap):
     zz = np.where(np.isnan(z), 0, z)
-    rgb = LightSource(azdeg=315, altdeg=40).shade(zz, cmap=_terrain(), vert_exag=3, dx=STEP_KM * 1000,
+    rgb = LightSource(azdeg=315, altdeg=40).shade(zz, cmap=cmap, vert_exag=3, dx=STEP_KM * 1000,
                                                     dy=STEP_KM * 1000, blend_mode="soft", vmin=vmin, vmax=vmax)
     rgb[zz <= 0] = SEA
     rgb[np.isnan(z)] = (0.5, 0.5, 0.5, 1)
@@ -71,7 +75,7 @@ def _per_range(data):
             f"· no tools, no internet · {exag:.0f}× vertical exaggeration")
     for k, (title, la, lo, z) in enumerate(panels):
         ax = fig.add_subplot(rows, cols, k + 1, projection="3d", computed_zorder=False)
-        _surface(ax, la, lo, z, title, vmin, vmax, exag=exag, zticks=_ticks(vmax))
+        _surface(ax, la, lo, z, title, vmin, vmax, exag=exag, zticks=_ticks(vmax), cmap=_cmap(r))
     fig.subplots_adjust(top=1 - 1.2 / (5.2 * rows + 1.2), bottom=0.0, left=0.0, right=1.0, wspace=0.0, hspace=0.0)
     fig.savefig(OUT / f"{r.key}_3d.png", dpi=110)
     plt.close(fig)
@@ -103,16 +107,16 @@ def _overview(datas, models):
                 if kind == "3d":
                     ax = fig.add_subplot(n_rows, n_cols, idx, projection="3d", computed_zorder=False)
                     if m is None:
-                        _surface(ax, hl, hn, hz, lab, vmin, vmax, exag=exag, zticks=_ticks(vmax))
+                        _surface(ax, hl, hn, hz, lab, vmin, vmax, exag=exag, zticks=_ticks(vmax), cmap=_cmap(r))
                     else:
-                        _surface(ax, g.lats, g.lons, preds[m], lab, vmin, vmax, exag=exag, zticks=_ticks(vmax))
+                        _surface(ax, g.lats, g.lons, preds[m], lab, vmin, vmax, exag=exag, zticks=_ticks(vmax), cmap=_cmap(r))
                     for t in ax.texts:
                         t.set_fontsize(10.5)
                 else:
                     ax = fig.add_subplot(n_rows, n_cols, idx)
                     z = elev_t if m is None else preds[m]
                     ext = [g.lons.min(), g.lons.max(), g.lats.min(), g.lats.max()]
-                    ax.imshow(_hillshade(z, vmin, vmax), extent=ext, interpolation="nearest",
+                    ax.imshow(_hillshade(z, vmin, vmax, _cmap(r)), extent=ext, interpolation="nearest",
                               aspect=1 / np.cos(np.radians(np.mean(g.lats))))  # square km
                     for pk, (la, lo) in r.peaks.items():
                         ax.plot(lo, la, "^", color=ACCENT, ms=5, mec="k", mew=0.5)
@@ -147,7 +151,8 @@ def _plotly(datas, models):
             if z is None:
                 z = np.full((len(la), len(lo)), np.nan)
             x, y = _xy_km(la, lo)
-            fig.add_trace(go.Surface(x=x, y=y, z=z, colorscale=cs, cmin=vmin, cmax=vmax, showscale=False,
+            ice = [[0, "#9fb4c8"], [0.5, "#d9e2ea"], [1, "#ffffff"]]
+            fig.add_trace(go.Surface(x=x, y=y, z=z, colorscale=ice if r.truth == "etopo1" else cs, cmin=vmin, cmax=vmax, showscale=False,
                                      visible=(i == 0), name=names[j],
                                      hovertemplate="%{z:.0f} m<extra>" + names[j] + "</extra>"),
                           row=j // cols + 1, col=j % cols + 1)
