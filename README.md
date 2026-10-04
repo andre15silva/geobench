@@ -149,6 +149,13 @@ Cost of the range runs: about $86 (Fable $59, Opus $17, Sonnet $10).
   runs `claude -p` with `--tools ""`, `--strict-mcp-config`, `--setting-sources ""`, our own
   system prompt, in an empty temp dir, and rejects any reply that took more than one turn.
 * Prompts are in [`geobench/prompts.py`](geobench/prompts.py).
+* **Audited for cheating** (`python -m geobench.audit [--live]`):
+  - All 1,825 stored calls show 0 web searches, 0 fetches and exactly one model iteration each.
+  - Re-running the exact sandboxed command shows an empty tool list and no MCP servers. Asked
+    outright to search the web or read a file, Opus, Sonnet and Fable make no tool calls, say they have none, and answer from memory.
+  - The answers look remembered, not looked up: 75–85% are multiples of 50 m. The few within 10 m of the
+    truth (1–6%) sit mostly on flat plains and ice, where a rounded regional height lands close by chance.
+    On the steep Everest grid the near-exact rate is 1.5%.
 
 ## Reproduce
 
