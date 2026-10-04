@@ -131,6 +131,8 @@ Cost of the range runs: about $86 (Fable $59, Opus $17, Sonnet $10).
 
 ## How it works
 
+![How GeoBench evaluates a model](figures/evaluation_pipeline.svg)
+
 | | Global | Everest |
 |---|---|---|
 | Grid | 2° cell centres, 90 × 180 = 16,200 points | 0.01° (~1 km), 27.75–28.20°N × 86.60–87.15°E, 46 × 56 = 2,576 points |

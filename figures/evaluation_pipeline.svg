@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 780" role="img" aria-label="GeoBench evaluation: a grid of coordinates is sent one latitude row per request to Claude inside a sealed call with no tools or internet; replies are parsed into a predicted grid, the same coordinates are sampled from Natural Earth, ETOPO1 and SRTM into a true grid, and the two grids are compared point by point." font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1d">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f1e1d"/>
+    </marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4f6f8f"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1240" height="780" fill="#faf9f5"/>
+
+  <!-- title -->
+  <text x="24" y="40" font-size="22" font-weight="700">How GeoBench evaluates a model</text>
+  <text x="24" y="64" font-size="13" fill="#6b6a66">The model only ever sees coordinates. The truth is looked up for the same coordinates on a separate path and joined back at the end.</text>
+
+  <!-- 1 · grids -->
+  <text x="24" y="110" font-size="13" font-weight="700">1 · Sample a grid</text>
+  <g fill="#ffffff" stroke="#1f1e1d" stroke-opacity="0.35">
+    <rect x="24" y="126" width="196" height="68" rx="6"/>
+    <rect x="24" y="206" width="196" height="68" rx="6"/>
+    <rect x="24" y="286" width="196" height="72" rx="6"/>
+  </g>
+  <text x="36" y="146" font-weight="700">Global</text>
+  <text x="36" y="164" fill="#6b6a66">2° cells · 16,200 points</text>
+  <text x="36" y="182" fill="#6b6a66">land or water + elevation</text>
+  <text x="36" y="226" font-weight="700">Everest</text>
+  <text x="36" y="244" fill="#6b6a66">0.01° (~1 km) · 2,576 points</text>
+  <text x="36" y="262" fill="#6b6a66">elevation</text>
+  <text x="36" y="306" font-weight="700">7 mountain ranges</text>
+  <text x="36" y="324" fill="#6b6a66">~5 km · 5–6.4k points each</text>
+  <text x="36" y="342" fill="#6b6a66">1 per continent · elevation</text>
+
+  <!-- grid -> sealed call -->
+  <line x1="220" y1="250" x2="288" y2="250" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="254" y="240" text-anchor="middle" font-size="11">1 row</text>
+  <text x="254" y="268" text-anchor="middle" font-size="11" fill="#6b6a66">per call</text>
+
+  <!-- 2 · sealed model call -->
+  <text x="290" y="110" font-size="13" font-weight="700">2 · Ask the model, one latitude row per request</text>
+  <rect x="290" y="126" width="540" height="232" rx="8" fill="#fdf3ee" stroke="#d97757" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="306" y="148" fill="#b85a3c" font-weight="600">sealed call · no tools · no internet · no MCP · own system prompt · empty dir</text>
+
+  <g fill="#ffffff" stroke="#1f1e1d" stroke-opacity="0.35">
+    <rect x="306" y="162" width="176" height="180" rx="6"/>
+    <rect x="512" y="210" width="116" height="84" rx="6"/>
+    <rect x="658" y="162" width="156" height="180" rx="6"/>
+  </g>
+  <text x="318" y="182" font-weight="700">Prompt</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">
+    <text x="318" y="206">0: 28.18, 86.60</text>
+    <text x="318" y="224">1: 28.18, 86.61</text>
+    <text x="318" y="242">2: 28.18, 86.62</text>
+    <text x="318" y="260">…</text>
+    <text x="318" y="278">55: 28.18, 87.15</text>
+    <text x="318" y="306" fill="#6b6a66">answer: &lt;i&gt; &lt;metres&gt;</text>
+    <text x="318" y="324" fill="#6b6a66">one line per point</text>
+  </g>
+
+  <text x="570" y="240" text-anchor="middle" font-weight="700" font-size="14">Claude</text>
+  <text x="570" y="260" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11">claude -p</text>
+  <text x="570" y="278" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11">--tools ""</text>
+
+  <text x="670" y="182" font-weight="700">Reply</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">
+    <text x="670" y="206">0 5600</text>
+    <text x="670" y="224">1 5750</text>
+    <text x="670" y="242">2 5850</text>
+    <text x="670" y="260">…</text>
+    <text x="670" y="278">55 4900</text>
+  </g>
+  <text x="670" y="306" fill="#6b6a66">from memory only</text>
+
+  <line x1="482" y1="252" x2="510" y2="252" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="628" y1="252" x2="656" y2="252" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <text x="290" y="380" fill="#6b6a66">Rows are separate requests sent in parallel: the model sees its neighbours along a row, never across rows.</text>
+
+  <!-- 3 · parse -->
+  <line x1="814" y1="252" x2="858" y2="252" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="860" y="110" font-size="13" font-weight="700">3 · Parse &amp; check</text>
+  <rect x="860" y="162" width="160" height="180" rx="6" fill="#ffffff" stroke="#1f1e1d" stroke-opacity="0.35"/>
+  <text x="872" y="186">match lines by index</text>
+  <text x="872" y="214">missing points →</text>
+  <text x="872" y="230">retry, up to 3×</text>
+  <text x="872" y="258">used a tool →</text>
+  <text x="872" y="274">reply rejected</text>
+  <text x="872" y="302">never answered →</text>
+  <text x="872" y="318">left blank (NaN)</text>
+
+  <line x1="1020" y1="252" x2="1048" y2="252" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="1050" y="202" width="166" height="100" rx="6" fill="#ffffff" stroke="#d97757" stroke-width="1.5"/>
+  <text x="1133" y="238" text-anchor="middle" font-weight="700" font-size="13">Predicted grid</text>
+  <text x="1133" y="258" text-anchor="middle" fill="#6b6a66">elevation per point</text>
+  <text x="1133" y="276" text-anchor="middle" fill="#6b6a66">(+ land / water)</text>
+
+  <!-- truth lane -->
+  <text x="290" y="420" font-size="13" font-weight="700" fill="#4f6f8f">Ground truth · same coordinates, never shown to the model</text>
+  <path d="M122,358 V470 H288" fill="none" stroke="#4f6f8f" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="134" y="462" fill="#4f6f8f" font-size="11">same points</text>
+
+  <g fill="#ffffff" stroke="#4f6f8f" stroke-opacity="0.6">
+    <rect x="290" y="434" width="170" height="76" rx="6"/>
+    <rect x="480" y="434" width="170" height="76" rx="6"/>
+    <rect x="670" y="434" width="170" height="76" rx="6"/>
+  </g>
+  <text x="302" y="456" font-weight="700">Natural Earth 1:10m</text>
+  <text x="302" y="474" fill="#6b6a66">land minus lakes</text>
+  <text x="302" y="492" fill="#6b6a66">→ global land mask</text>
+  <text x="492" y="456" font-weight="700">ETOPO1 ice surface</text>
+  <text x="492" y="474" fill="#6b6a66">1′, top of the ice</text>
+  <text x="492" y="492" fill="#6b6a66">→ global, Antarctica</text>
+  <text x="682" y="456" font-weight="700">Terrain Tiles (SRTM)</text>
+  <text x="682" y="474" fill="#6b6a66">~30 m land elevation</text>
+  <text x="682" y="492" fill="#6b6a66">→ Everest, 6 ranges</text>
+
+  <g stroke="#4f6f8f" stroke-width="1.5" fill="none">
+    <path d="M375,510 V526"/>
+    <path d="M565,510 V526"/>
+    <path d="M755,510 V526"/>
+    <path d="M375,526 H1010 V472 H1048" marker-end="url(#b)"/>
+  </g>
+  <text x="860" y="546" fill="#4f6f8f" font-size="11">sampled at the grid points (bilinear)</text>
+
+  <rect x="1050" y="422" width="166" height="100" rx="6" fill="#ffffff" stroke="#4f6f8f" stroke-width="1.5"/>
+  <text x="1133" y="458" text-anchor="middle" font-weight="700" font-size="13">True grid</text>
+  <text x="1133" y="478" text-anchor="middle" fill="#6b6a66">elevation per point</text>
+  <text x="1133" y="496" text-anchor="middle" fill="#6b6a66">(+ land mask)</text>
+
+  <!-- join -->
+  <path d="M1216,252 H1230 V630 H1218" fill="none" stroke="#d97757" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="1133" y1="522" x2="1133" y2="598" stroke="#4f6f8f" stroke-width="1.5" marker-end="url(#b)"/>
+
+  <!-- 4 · score -->
+  <rect x="24" y="600" width="1192" height="160" rx="8" fill="#ffffff" stroke="#1f1e1d" stroke-opacity="0.35"/>
+  <text x="40" y="626" font-size="13" font-weight="700">4 · Compare point by point, then render</text>
+  <g fill="#f4f2ec">
+    <rect x="40" y="640" width="222" height="104" rx="6"/>
+    <rect x="274" y="640" width="222" height="104" rx="6"/>
+    <rect x="508" y="640" width="222" height="104" rx="6"/>
+    <rect x="742" y="640" width="222" height="104" rx="6"/>
+    <rect x="976" y="640" width="222" height="104" rx="6"/>
+  </g>
+  <text x="52" y="664" font-weight="700">Land / water</text>
+  <text x="52" y="684" fill="#6b6a66">accuracy, area-weighted</text>
+  <text x="52" y="702" fill="#6b6a66">by cos(latitude);</text>
+  <text x="52" y="720" fill="#6b6a66">no answer counts as wrong</text>
+
+  <text x="286" y="664" font-weight="700">Elevation error</text>
+  <text x="286" y="684" fill="#6b6a66">MAE · RMSE · bias · r</text>
+  <text x="286" y="702" fill="#6b6a66">(global: only where truth</text>
+  <text x="286" y="720" fill="#6b6a66">and model both say land)</text>
+
+  <text x="520" y="664" font-weight="700">Summit</text>
+  <text x="520" y="684" fill="#6b6a66">highest predicted point</text>
+  <text x="520" y="702" fill="#6b6a66">→ height, and km to the</text>
+  <text x="520" y="720" fill="#6b6a66">nearest named peak</text>
+
+  <text x="754" y="664" font-weight="700">Effective resolution</text>
+  <text x="754" y="684" fill="#6b6a66">blur the true grid wider and</text>
+  <text x="754" y="702" fill="#6b6a66">wider until its MAE equals the</text>
+  <text x="754" y="720" fill="#6b6a66">model's → that width, in km</text>
+
+  <text x="988" y="664" font-weight="700">Outputs</text>
+  <text x="988" y="684" fill="#6b6a66">2-D maps · 3-D surfaces</text>
+  <text x="988" y="702" fill="#6b6a66">interactive HTML viewer</text>
+  <text x="988" y="720" fill="#6b6a66">results/scores.json</text>
+</svg>
