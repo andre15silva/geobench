@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 800" role="img" aria-label="How the globe figure is made: the globe is split into 90 rows of 180 points; each row is one request to Claude, which answers W or L plus metres for each point; each answer is painted as one pixel (black for water, a colour for elevation, grey for no answer); 90 rows stack into one map per model; each panel title gives area-weighted land/water accuracy and the mean elevation error over points both truth and model call land." font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1d">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f1e1d"/>
+    </marker>
+    <linearGradient id="ramp" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#3d6b35"/>
+      <stop offset="0.25" stop-color="#b6ae70"/>
+      <stop offset="0.5" stop-color="#907458"/>
+      <stop offset="0.75" stop-color="#c9c4be"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1240" height="800" fill="#faf9f5"/>
+
+  <text x="24" y="40" font-size="22" font-weight="700">How the globe figure is made</text>
+  <text x="24" y="64" font-size="13" fill="#6b6a66">Every pixel of every map is one answer to “Land or water? If land, how high?”. Example: the row at 1°N, crossing from the Gulf of Guinea into Gabon and Congo.</text>
+
+  <!-- 1 · rows -->
+  <text x="24" y="108" font-size="13" font-weight="700">1 · Split the globe into rows</text>
+  <rect x="24" y="124" width="240" height="120" fill="#141413"/>
+  <g stroke="#faf9f5" stroke-opacity="0.12">
+    <line x1="24" y1="132" x2="264" y2="132"/><line x1="24" y1="140" x2="264" y2="140"/>
+    <line x1="24" y1="148" x2="264" y2="148"/><line x1="24" y1="156" x2="264" y2="156"/>
+    <line x1="24" y1="164" x2="264" y2="164"/><line x1="24" y1="172" x2="264" y2="172"/>
+    <line x1="24" y1="196" x2="264" y2="196"/><line x1="24" y1="204" x2="264" y2="204"/>
+    <line x1="24" y1="212" x2="264" y2="212"/><line x1="24" y1="220" x2="264" y2="220"/>
+    <line x1="24" y1="228" x2="264" y2="228"/><line x1="24" y1="236" x2="264" y2="236"/>
+  </g>
+  <rect x="24" y="180" width="240" height="8" fill="#d97757"/>
+  <text x="24" y="266">90 rows × 180 points</text>
+  <text x="24" y="284" fill="#6b6a66">2° apart · 16,200 points in all</text>
+  <line x1="264" y1="184" x2="298" y2="184" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 2 · one request per row -->
+  <text x="300" y="108" font-size="13" font-weight="700">2 · Send one row per request</text>
+  <rect x="300" y="124" width="250" height="196" rx="6" fill="#ffffff" stroke="#1f1e1d" stroke-opacity="0.35"/>
+  <text x="314" y="146" fill="#6b6a66">row 44 · latitude 1°N · 180 lines</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12">
+    <text x="314" y="172">93: 1.0000, 7.0000</text>
+    <text x="314" y="190">94: 1.0000, 9.0000</text>
+    <text x="314" y="208">95: 1.0000, 11.0000</text>
+    <text x="314" y="226">96: 1.0000, 13.0000</text>
+    <text x="314" y="244">…</text>
+    <text x="314" y="262">100: 1.0000, 21.0000</text>
+    <text x="314" y="298" fill="#6b6a66" font-size="11.5">answer: &lt;i&gt; L &lt;m&gt;  or  &lt;i&gt; W</text>
+  </g>
+
+  <line x1="550" y1="222" x2="590" y2="222" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="592" y="172" width="150" height="100" rx="6" fill="#fdf3ee" stroke="#d97757" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="667" y="210" text-anchor="middle" font-size="14" font-weight="700">Opus 5.5</text>
+  <text x="667" y="232" text-anchor="middle" fill="#b85a3c">no tools</text>
+  <text x="667" y="250" text-anchor="middle" fill="#b85a3c">no internet</text>
+  <line x1="742" y1="222" x2="782" y2="222" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <rect x="784" y="124" width="200" height="196" rx="6" fill="#ffffff" stroke="#1f1e1d" stroke-opacity="0.35"/>
+  <text x="798" y="146" font-weight="700">Reply</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12">
+    <text x="798" y="172">93 W</text>
+    <text x="798" y="190">94 W</text>
+    <text x="798" y="208">95 L 600</text>
+    <text x="798" y="226">96 L 500</text>
+    <text x="798" y="244">…</text>
+    <text x="798" y="262">100 L 400</text>
+  </g>
+  <text x="798" y="298" fill="#6b6a66">actual Opus 5.5 output</text>
+
+  <!-- 3 · paint -->
+  <path d="M884,320 V382 H412 V396" fill="none" stroke="#1f1e1d" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="648" y="374" text-anchor="middle" fill="#6b6a66">matched to points by index</text>
+  <text x="24" y="368" font-size="13" font-weight="700">3 · Paint every answer as one pixel</text>
+
+  <text x="24" y="424" font-weight="700">Opus 5.5</text>
+  <text x="24" y="478" font-weight="700">Real</text>
+  <text x="24" y="494" fill="#6b6a66" font-size="11">Natural Earth land mask</text>
+  <text x="24" y="508" fill="#6b6a66" font-size="11">+ ETOPO1 elevation</text>
+
+  <!-- Opus row: 92..100 -->
+  <g>
+    <rect x="180" y="400" width="48" height="40" fill="#141413"/>
+    <rect x="232" y="400" width="48" height="40" fill="#141413"/>
+    <rect x="284" y="400" width="48" height="40" fill="#141413"/>
+    <rect x="336" y="400" width="48" height="40" fill="#73924d"/>
+    <rect x="388" y="400" width="48" height="40" fill="#6a8b49"/>
+    <rect x="440" y="400" width="48" height="40" fill="#5b8143"/>
+    <rect x="492" y="400" width="48" height="40" fill="#5b8143"/>
+    <rect x="544" y="400" width="48" height="40" fill="#5b8143"/>
+    <rect x="596" y="400" width="48" height="40" fill="#618545"/>
+  </g>
+  <g text-anchor="middle" font-size="11.5" fill="#ffffff">
+    <text x="204" y="424" fill="#8a8984">W</text><text x="256" y="424" fill="#8a8984">W</text><text x="308" y="424" fill="#8a8984">W</text>
+    <text x="360" y="424">600</text><text x="412" y="424">500</text><text x="464" y="424">350</text>
+    <text x="516" y="424">330</text><text x="568" y="424">350</text><text x="620" y="424">400</text>
+  </g>
+  <!-- Real row -->
+  <g>
+    <rect x="180" y="460" width="48" height="40" fill="#141413"/>
+    <rect x="232" y="460" width="48" height="40" fill="#141413"/>
+    <rect x="284" y="460" width="48" height="40" fill="#141413"/>
+    <rect x="336" y="460" width="48" height="40" fill="#6a8b49"/>
+    <rect x="388" y="460" width="48" height="40" fill="#6a8b49"/>
+    <rect x="440" y="460" width="48" height="40" fill="#648746"/>
+    <rect x="492" y="460" width="48" height="40" fill="#5b8143"/>
+    <rect x="544" y="460" width="48" height="40" fill="#5b8143"/>
+    <rect x="596" y="460" width="48" height="40" fill="#618545"/>
+  </g>
+  <g text-anchor="middle" font-size="11.5" fill="#ffffff">
+    <text x="204" y="484" fill="#8a8984">W</text><text x="256" y="484" fill="#8a8984">W</text><text x="308" y="484" fill="#8a8984">W</text>
+    <text x="360" y="484">498</text><text x="412" y="484">501</text><text x="464" y="484">440</text>
+    <text x="516" y="484">329</text><text x="568" y="484">339</text><text x="620" y="484">404</text>
+  </g>
+  <g text-anchor="middle" font-size="11" fill="#6b6a66">
+    <text x="204" y="518">5°E</text><text x="256" y="518">7°E</text><text x="308" y="518">9°E</text>
+    <text x="360" y="518">11°E</text><text x="412" y="518">13°E</text><text x="464" y="518">15°E</text>
+    <text x="516" y="518">17°E</text><text x="568" y="518">19°E</text><text x="620" y="518">21°E</text>
+  </g>
+
+  <!-- legend -->
+  <rect x="690" y="402" width="16" height="16" fill="#141413"/>
+  <text x="716" y="415">W → black (water)</text>
+  <rect x="690" y="430" width="170" height="14" fill="url(#ramp)" stroke="#1f1e1d" stroke-opacity="0.25"/>
+  <text x="690" y="460">L + metres → colour, 0 → 6000 m</text>
+  <rect x="690" y="472" width="16" height="16" fill="#808080"/>
+  <text x="716" y="485">no answer → grey</text>
+
+  <!-- 4 · stack -->
+  <text x="980" y="368" font-size="13" font-weight="700">4 · Stack the 90 rows</text>
+  <rect x="1000" y="392" width="200" height="100" fill="#141413"/>
+  <g>
+    <rect x="1030" y="404" width="60" height="6" fill="#8fa65a"/><rect x="1110" y="404" width="70" height="6" fill="#6a8b49"/>
+    <rect x="1024" y="414" width="50" height="6" fill="#6a8b49"/><rect x="1106" y="414" width="80" height="6" fill="#b6ae70"/>
+    <rect x="1030" y="424" width="34" height="6" fill="#5b8143"/><rect x="1100" y="424" width="64" height="6" fill="#907458"/>
+    <rect x="1046" y="434" width="20" height="6" fill="#5b8143"/><rect x="1094" y="434" width="40" height="6" fill="#6a8b49"/>
+    <rect x="1086" y="440" width="44" height="6" fill="none" stroke="#d97757" stroke-width="2"/>
+    <rect x="1052" y="452" width="16" height="6" fill="#73924d"/><rect x="1096" y="452" width="30" height="6" fill="#6a8b49"/>
+    <rect x="1056" y="462" width="10" height="6" fill="#73924d"/><rect x="1100" y="462" width="20" height="6" fill="#618545"/>
+    <rect x="1000" y="480" width="200" height="12" fill="#b6ae70"/>
+  </g>
+  <text x="1000" y="512">one map per model</text>
+  <text x="1000" y="530" fill="#6b6a66">the Real map is painted</text>
+  <text x="1000" y="546" fill="#6b6a66">the same way</text>
+
+  <text x="24" y="566" fill="#6b6a66">Rows are separate requests, so a row never sees the rows above and below it: Haiku’s horizontal stripes, and the two rows Sonnet answered all “W”, come from this.</text>
+
+  <!-- 5 · numbers -->
+  <text x="24" y="612" font-size="13" font-weight="700">5 · The two numbers in each panel title, e.g. “Opus 5.5   98.2% · ±175 m”</text>
+  <g text-anchor="middle" fill="#6b6a66">
+    <text x="260" y="638">model says L</text>
+    <text x="424" y="638">model says W</text>
+  </g>
+  <text x="24" y="676" fill="#6b6a66">truth: land</text>
+  <text x="24" y="736" fill="#6b6a66">truth: water</text>
+  <rect x="180" y="648" width="160" height="56" rx="4" fill="#e5efdc"/>
+  <rect x="344" y="648" width="160" height="56" rx="4" fill="#f6dcd3"/>
+  <rect x="180" y="708" width="160" height="56" rx="4" fill="#f6dcd3"/>
+  <rect x="344" y="708" width="160" height="56" rx="4" fill="#e5efdc"/>
+  <g text-anchor="middle">
+    <text x="260" y="671" font-weight="700">✓ right</text>
+    <text x="260" y="690" fill="#4a6b3a">+ elevation error</text>
+    <text x="424" y="680" font-weight="700">✗ wrong</text>
+    <text x="260" y="740" font-weight="700">✗ wrong</text>
+    <text x="424" y="740" font-weight="700">✓ right</text>
+  </g>
+
+  <text x="540" y="660" font-weight="700" font-size="13">98.2% · land/water accuracy</text>
+  <text x="540" y="680" fill="#6b6a66">share of ✓ points, each weighted by cos(latitude): a 2° cell at 60° covers half the area of one at the equator.</text>
+  <text x="540" y="698" fill="#6b6a66">A point the model never answered counts as ✗.</text>
+  <text x="540" y="730" font-weight="700" font-size="13">±175 m · average elevation error</text>
+  <text x="540" y="750" fill="#6b6a66">mean |model − real| over the green “+ elevation error” points only, same weights. From the row above:</text>
+  <text x="540" y="768" fill="#6b6a66">11°E: |600 − 498| = 102 m · 17°E: |330 − 329| = 1 m. The Real panel has no numbers: it is the reference.</text>
+</svg>
